@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+// Submitted by Sukanya Parashar
 pragma solidity ^0.8.6;
 
 interface ERC20Token {
@@ -57,6 +58,7 @@ contract PortfolioContract {
         address tokenAddress = eRC20Tokens[_tokenSymbol].tokenAddress;
         ERC20Token token = ERC20Token(tokenAddress);
         require(token.balanceOf(address(this)) >= _amount, "Insufficient balance");
+        require(userWallet[msg.sender][_tokenSymbol].amount >= _amount, "Insufficient balance");
         token.transfer(msg.sender, _amount);
         userWallet[msg.sender][_tokenSymbol].amount -= _amount;
     }
@@ -71,7 +73,7 @@ contract PortfolioContract {
         }
     }
     
-    function listAllTokensAndBalances() public returns(TokenBalance[] memory) {
+    function listAllTokensAndBalances() public view returns(TokenBalance[] memory) {
         TokenBalance[] memory tokenBalance = new TokenBalance[](tokenSymbols.length);
         for (uint256 i = 0; i < tokenSymbols.length; i++) {
             tokenBalance[i].token = tokenSymbols[i];
@@ -84,6 +86,7 @@ contract PortfolioContract {
         address tokenAddress = eRC20Tokens[_tokenSymbol].tokenAddress;
         ERC20Token token = ERC20Token(tokenAddress);
         require(token.balanceOf(address(this)) >= _amount, "Insufficient balance");
+        require(userWallet[msg.sender][_tokenSymbol].amount >= _amount, "Insufficient balance");
         userWallet[msg.sender][_tokenSymbol].amount -= _amount;
         userWallet[_toAddress][_tokenSymbol].amount += _amount;
     }
